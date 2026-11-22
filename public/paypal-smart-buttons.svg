@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <rect x="0" y="0" width="48" height="48" fill="#ffffff"/>
+  <rect x="0" y="9" width="48" height="30" rx="3" fill="#ffffff" stroke="#333333" stroke-width="2"/>
+  <rect x="0" y="16" width="48" height="7" fill="#555555"/>
+  <text x="24" y="34" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#222222" text-anchor="middle">PayPal</text>
+</svg>

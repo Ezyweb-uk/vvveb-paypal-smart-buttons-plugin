@@ -1,0 +1,10 @@
+<!--
+ PayPal Smart Buttons for Vvveb
+ Copyright (C) 2026  Ezyweb.uk
+ Licensed under the GNU Affero General Public License v3 or later, see the LICENSE file
+-->
+<script id="paypal-sdk-script" data-csp-nonce="{$this->checkout.paypal_smart_buttons.csp_nonce}" src="https://www.paypal.com/sdk/js?client-id={$this->checkout.paypal_smart_buttons.client_id}&currency={$this->checkout.paypal_smart_buttons.currency}&components=buttons&intent=capture"></script>
+<script nonce="{$this->checkout.paypal_smart_buttons.csp_nonce}">
+	window.PaypalSmartButtonsConfig = { debug: {$this->checkout.paypal_smart_buttons.debug}, cspNonce: "{$this->checkout.paypal_smart_buttons.csp_nonce}" };
+</script>
+<script src="/plugins/paypal-smart-buttons/paypal-smart-buttons.js" integrity="sha384-{$this->checkout.paypal_smart_buttons.script_integrity}"></script>

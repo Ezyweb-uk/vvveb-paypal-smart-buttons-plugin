@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<!--
+ PayPal Smart Buttons for Vvveb
+ Copyright (C) 2022  Ziadin Givan
+ Copyright (C) 2026  Ezyweb.uk
+ Licensed under the GNU Affero General Public License v3 or later, see the LICENSE file
+-->
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="/favicon.ico">
+
+  <base href="">
+
+  <title>Vvveb - PayPal Smart Buttons</title>
+
+  <link href="css/admin.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div id="container">
+
+    <aside class="sidebar" data-v-copy-from="index.html,.sidebar">
+    </aside>
+
+    <main class="main">
+
+      <header class="clearfix top-header" data-v-copy-from="index.html,.top-header">
+      </header>
+
+      <form id="paypal-settings-form" action="" method="post" class="settings">
+        <input type="hidden" name="action" id="action" value="save">
+        <input type="hidden" name="csrf" data-v-csrf>
+        <header class="actions">
+          <div class="title">
+            <h4 class="text-muted mt-2">
+              <img src="/plugins/paypal-smart-buttons/paypal-smart-buttons.svg" height="24" alt="" style="vertical-align: -4px; margin-right: 4px;">
+              PayPal Checkout (Smart Buttons) Settings
+            </h4>
+          </div>
+          <div class="btns">
+            <a href="{$this.adminPath}index.php?module=plugin/plugins" title="Plugins list"
+                class="btn btn-icon btn-outline-secondary me-2">
+                <svg class="svg-icon" aria-hidden="true"><use href="/admin/default/img/icons.svg#arrow-left"></use></svg> <span>Plugins list</span>
+            </a>
+            <button type="submit" class="btn btn-primary btn-icon ms-1" title="Save settings">
+              <svg class="svg-icon" aria-hidden="true"><use href="/admin/default/img/icons.svg#pencil"></use></svg> <span>Save settings</span>
+            </button>
+          </div>
+        </header>
+        <div>
+          <div id="main-content">
+
+            <div class="notifications" data-v-notifications data-v-copy-from="index.html,.notifications"></div>
+
+            <div class="content clearfix px-4 row">
+
+              <ul class="nav nav-tabs" id="paypal-methods-nav" role="tablist" data-v-methods>
+                <li class="nav-item me-2">
+                  <button class="btn btn-outline-secondary btn-icon py-1 mb-1" type="button" onclick="addTab(this)">
+                    <svg class="svg-icon" aria-hidden="true"><use href="/admin/default/img/icons.svg#plus"></use></svg>
+                    <span>Add PayPal profile</span>
+                  </button>
+                </li>
+                <li class="nav-item" data-v-method>
+                  <a href="#tab-option0" class="nav-link" data-bs-toggle="tab" data-v-method-payment_method_id>
+                    <span data-v-method-name>PayPal</span>
+                    <svg class="svg-icon text-danger ms-2" onclick="removeTab(this, 'payment_method_id')" aria-hidden="true"><use href="/admin/default/img/icons.svg#circle-minus"></use></svg>
+                  </a>
+                </li>
+                <li class="nav-item d-none tab-nav-template">
+                  <a href="#tab-template" class="nav-link" data-bs-toggle="tab">
+                    <span>New PayPal profile</span>
+                    <svg class="svg-icon text-danger ms-2" onclick="removeTab(this, 'payment_method_id')" aria-hidden="true"><use href="/admin/default/img/icons.svg#circle-minus"></use></svg>
+                  </a>
+                </li>
+              </ul>
+
+              <div class="tab-content" data-v-methods>
+
+                <div class="tab-pane" data-type="text" id="tab-option0" data-v-method>
+
+                  <input type="hidden" name="methods[0][instance_id]" value="" class="instance-id">
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Name</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="methods[0][name]" value="" class="form-control method field-name" placeholder="PayPal / Debit or Credit Card">
+                      <div class="form-text">Name shown to the customer at checkout, and as this tab's label. Leave blank to use the default.</div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Environment</label>
+                    <div class="col-sm-10">
+                      <select name="methods[0][environment]" class="form-select environment-select">
+                        <option value="sandbox">Sandbox (Testing)</option>
+                        <option value="live">Live (Production)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3 paypal-env-group" data-env="live">
+                    <label class="col-sm-2 col-form-label">Live Client ID</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="methods[0][client_id]" value="" class="form-control method field-client-id">
+                    </div>
+                  </div>
+
+                  <div class="row mb-3 paypal-env-group" data-env="live">
+                    <label class="col-sm-2 col-form-label">Live Client Secret</label>
+                    <div class="col-sm-10">
+                      <input type="password" name="methods[0][client_secret]" value="" class="form-control method field-client-secret" data-saved="0" autocomplete="new-password">
+                      <div class="form-text secret-help"></div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3 paypal-env-group" data-env="sandbox">
+                    <label class="col-sm-2 col-form-label">Sandbox Client ID</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="methods[0][sandbox_client_id]" value="" class="form-control method field-sandbox-client-id">
+                    </div>
+                  </div>
+
+                  <div class="row mb-3 paypal-env-group" data-env="sandbox">
+                    <label class="col-sm-2 col-form-label">Sandbox Client Secret</label>
+                    <div class="col-sm-10">
+                      <input type="password" name="methods[0][sandbox_client_secret]" value="" class="form-control method field-sandbox-client-secret" data-saved="0" autocomplete="new-password">
+                      <div class="form-text secret-help"></div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Currency</label>
+                    <div class="col-sm-10">
+                      <select name="methods[0][currency]" class="form-select field-currency">
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Payment status on success</label>
+                    <div class="col-sm-10">
+                      <select name="methods[0][success_payment_status_id]" class="form-select" data-v-success_payment_status_id>
+                        <option value="4" data-v-option>Complete</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <hr class="my-4">
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Geo Region</label>
+                    <div class="col-sm-10">
+                      <select name="methods[0][region_group_id]" class="form-select" data-v-region_group_id>
+                        <option value="0">-- All Regions --</option>
+                        <option value="0" data-v-option>All Regions</option>
+                      </select>
+                      <div class="form-text">Only use this profile for the selected region. Leave as "-- All Regions --" to allow it everywhere (used as the fallback if no other profile's region matches).</div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Sort Order</label>
+                    <div class="col-sm-10">
+                      <input type="number" name="methods[0][sort_order]" value="0" class="form-control method field-sort-order">
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Payment instructions/message</label>
+                    <div class="col-sm-10">
+                      <textarea name="methods[0][message]" rows="3" class="form-control field-message" placeholder="Shown under the PayPal button at checkout (optional)"></textarea>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Debug mode</label>
+                    <div class="col-sm-10">
+                      <div class="form-check">
+                        <input type="checkbox" name="methods[0][debug]" value="1" class="form-check-input method field-debug">
+                        <label class="form-check-label">Include error detail in the checkout error message (and browser console)</label>
+                      </div>
+                      <div class="form-text">Full errors are always written to the PHP error log regardless of this setting. Turn this on only while diagnosing an issue, then switch it back off — it can expose internal detail to shoppers. On for any profile turns it on for all of them.</div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="tab-pane tab-content-template d-none" data-type="text" data-id="#">
+
+                  <input type="hidden" name="methods[0][instance_id]" value="" class="instance-id" disabled>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Name</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="methods[0][name]" value="" class="form-control method" placeholder="PayPal / Debit or Credit Card" disabled>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Environment</label>
+                    <div class="col-sm-10">
+                      <!-- A newly-added profile defaults to Live (a fresh profile is
+                      far more likely being set up for real use than for testing),
+                      hence "live" selected here rather than "sandbox". This select
+                      also needs the same environment-select class the live pane's
+                      copy has — the inline script below finds it by that class to
+                      wire live/sandbox field toggling; without it a cloned tab's
+                      fields never show/hide correctly. -->
+                      <select name="methods[0][environment]" class="form-select environment-select" disabled>
+                        <option value="sandbox">Sandbox (Testing)</option>
+                        <option value="live" selected>Live (Production)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3 paypal-env-group" data-env="live">
+                    <label class="col-sm-2 col-form-label">Live Client ID</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="methods[0][client_id]" value="" class="form-control method" disabled>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3 paypal-env-group" data-env="live">
+                    <label class="col-sm-2 col-form-label">Live Client Secret</label>
+                    <div class="col-sm-10">
+                      <input type="password" name="methods[0][client_secret]" value="" class="form-control method" data-saved="0" autocomplete="new-password" disabled>
+                      <div class="form-text secret-help"></div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3 paypal-env-group" data-env="sandbox">
+                    <label class="col-sm-2 col-form-label">Sandbox Client ID</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="methods[0][sandbox_client_id]" value="" class="form-control method" disabled>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3 paypal-env-group" data-env="sandbox">
+                    <label class="col-sm-2 col-form-label">Sandbox Client Secret</label>
+                    <div class="col-sm-10">
+                      <input type="password" name="methods[0][sandbox_client_secret]" value="" class="form-control method" data-saved="0" autocomplete="new-password" disabled>
+                      <div class="form-text secret-help"></div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Currency</label>
+                    <div class="col-sm-10">
+                      <select name="methods[0][currency]" class="form-select" disabled>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Payment status on success</label>
+                    <div class="col-sm-10">
+                      <select name="methods[0][success_payment_status_id]" class="form-select" disabled>
+                        <option value="4">Complete</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <hr class="my-4">
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Geo Region</label>
+                    <div class="col-sm-10">
+                      <select name="methods[0][region_group_id]" class="form-select" disabled>
+                        <option value="0">-- All Regions --</option>
+                        <option value="0">All Regions</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Sort Order</label>
+                    <div class="col-sm-10">
+                      <input type="number" name="methods[0][sort_order]" value="0" class="form-control method" disabled>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Payment instructions/message</label>
+                    <div class="col-sm-10">
+                      <textarea name="methods[0][message]" rows="3" class="form-control method" disabled></textarea>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Debug mode</label>
+                    <div class="col-sm-10">
+                      <div class="form-check">
+                        <input type="checkbox" name="methods[0][debug]" value="1" class="form-check-input method" disabled>
+                        <label class="form-check-label">Include error detail in the checkout error message (and browser console)</label>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </form>
+
+    </main>
+  </div>
+
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script id="admin-js" type="module" src="/js/admin.js"></script>
+  <script id="functions-js" src="/js/admin/functions.js"></script>
+
+  <script>
+    (function () {
+      // Show/hide the live vs sandbox credential fields and toggle which
+      // pair is required, per tab-pane, and wire the secret "leave blank to
+      // keep" placeholder. Runs on load and again whenever a tab is added
+      // (core's addTab() clones tab-option0's markup, so re-scan on every
+      // click rather than trying to hook into that clone directly).
+      function required(el, isRequired) {
+        if (!el) return;
+        el.required = isRequired && el.dataset.saved !== '1';
+      }
+
+      function wireSecret(input) {
+        if (!input) return;
+        var help = input.parentElement ? input.parentElement.querySelector('.secret-help') : null;
+
+        if (input.dataset.saved === '1') {
+          input.placeholder = '•••••••• (saved)';
+          if (help) help.textContent = 'Leave blank to keep the current secret.';
+        } else if (help) {
+          help.textContent = '';
+        }
+      }
+
+      function applyEnvironment(pane) {
+        var envSelect = pane.querySelector('.environment-select');
+        var env = envSelect ? envSelect.value : 'sandbox';
+
+        pane.querySelectorAll('.paypal-env-group').forEach(function (group) {
+          group.style.display = group.dataset.env === env ? '' : 'none';
+        });
+
+        var fields = pane.querySelectorAll('input[name*="[client_id]"], input[name*="[client_secret]"], input[name*="[sandbox_client_id]"], input[name*="[sandbox_client_secret]"]');
+        fields.forEach(function (el) {
+          var isLive = el.name.indexOf('[sandbox_') === -1;
+          required(el, isLive ? env === 'live' : env === 'sandbox');
+        });
+      }
+
+      // The hidden clone-source (.tab-content-template) deliberately never
+      // gets the full server-rendered Geo Region / Payment status option
+      // lists (see the project doc's Rule 0b note on why those data-v-*
+      // attributes were stripped from it) — so a newly-added tab only ever
+      // starts with the template's bare "-- All Regions --"/"All Regions"
+      // pair until the page is reloaded after saving. Copy the real option
+      // list over from the one pane vTpl DID populate (#tab-option0) right
+      // after a clone appears, so a new tab's dropdowns are complete from
+      // the moment it's added, not just after a save+reload round trip.
+      function copyOptionsIfIncomplete(pane, selector) {
+        var target = pane.querySelector(selector);
+        if (!target) return;
+
+        var reference = document.getElementById('tab-option0');
+        if (!reference || reference === pane) return;
+
+        var source = reference.querySelector(selector);
+        if (!source || target.options.length >= source.options.length) return;
+
+        var currentValue = target.value;
+        target.innerHTML = source.innerHTML;
+
+        for (var i = 0; i < target.options.length; i++) {
+          if (target.options[i].value === currentValue) {
+            target.value = currentValue;
+            break;
+          }
+        }
+      }
+
+      function wirePane(pane) {
+        if (!pane || pane.classList.contains('tab-content-template')) return;
+
+        pane.querySelectorAll('input[type="password"]').forEach(wireSecret);
+
+        copyOptionsIfIncomplete(pane, 'select[name$="[region_group_id]"]');
+        copyOptionsIfIncomplete(pane, 'select[name$="[success_payment_status_id]"]');
+
+        var envSelect = pane.querySelector('.environment-select');
+        if (envSelect && !envSelect.dataset.wired) {
+          envSelect.dataset.wired = '1';
+          envSelect.addEventListener('change', function () { applyEnvironment(pane); });
+        }
+
+        applyEnvironment(pane);
+      }
+
+      function wireAll() {
+        document.querySelectorAll('[data-v-methods] .tab-pane[data-v-method], [data-v-methods] .tab-pane[id^="tab-option"]').forEach(wirePane);
+      }
+
+      wireAll();
+
+      // core's addTab()/removeTab() (js/admin.js) rebuild the tab list; a
+      // MutationObserver picks up any newly-cloned pane without needing to
+      // know addTab()'s internals.
+      var tabContent = document.querySelector('.tab-content[data-v-methods]');
+      if (tabContent && window.MutationObserver) {
+        new MutationObserver(function () { wireAll(); }).observe(tabContent, { childList: true });
+      }
+    })();
+  </script>
+
+</body>
+
+</html>
