@@ -49,6 +49,96 @@ class SettingsResolver {
 	const NAMESPACE_KEY = 'paypal_smart_buttons';
 
 	/**
+	 * Site-wide options, kept in their own namespace: every non-array value
+	 * under NAMESPACE_KEY is treated as legacy flat settings and migrated
+	 * into an instance by the settings page (see loadInstances()).
+	 */
+	const OPTIONS_KEY = 'paypal_smart_buttons_options';
+
+	/** Slug of Ezyweb's CSP Manager plugin. */
+	const CSP_MANAGER_SLUG = 'csp-manager';
+
+	/**
+	 * The "Checkout security policy" setting: 'auto' (default), 'always' or 'never'.
+	 * Words, not 1/0: core reads a stored '0' back as empty and returns the default.
+	 */
+	public static function checkoutCspMode(?int $siteId = null): string {
+		$value = (string) ($siteId !== null
+			? getSetting(self::OPTIONS_KEY, 'checkout_csp', 'auto', $siteId)
+			: getSetting(self::OPTIONS_KEY, 'checkout_csp', 'auto'));
+
+		return in_array($value, ['auto', 'always', 'never'], true) ? $value : 'auto';
+	}
+
+	/**
+	 * Whether CSP Manager is installed and active on this site
+	 * (config/plugins.php, the same status core uses to load plugins).
+	 */
+	public static function cspManagerActive(?int $siteId = null): bool {
+		$siteId = $siteId ?? (defined('SITE_ID') ? (int) SITE_ID : 1);
+
+		if (! is_file(DIR_PLUGINS . self::CSP_MANAGER_SLUG . '/plugin.php')) {
+			return false;
+		}
+
+		$plugins = \Vvveb\config("plugins.$siteId", []);
+
+		return is_array($plugins) && (($plugins[self::CSP_MANAGER_SLUG]['status'] ?? '') === 'active');
+	}
+
+	/**
+	 * Whether the plugin sends its own Content Security Policy header (and
+	 * the theme compatibility script) on the checkout page.
+	 *
+	 * Automatic: only when CSP Manager is active. A site running CSP Manager
+	 * has opted into strict policies and its theme is expected to cope; on a
+	 * site without it, the strict policy would block the theme's inline
+	 * checkout code (Landing's region list and address/login toggles).
+	 */
+	public static function sendCheckoutCsp(?int $siteId = null): bool {
+		$mode = self::checkoutCspMode($siteId);
+
+		if ($mode === 'auto') {
+			return self::cspManagerActive($siteId);
+		}
+
+		return $mode === 'always';
+	}
+
+	/**
+	 * Whether CSP Manager is active and in enforce mode. CSP Manager merges
+	 * this plugin's header into its own and sends the result in its own mode,
+	 * so in report-only mode nothing is blocked.
+	 */
+	public static function cspManagerEnforcing(?int $siteId = null): bool {
+		if (! self::cspManagerActive($siteId)) {
+			return false;
+		}
+
+		$mode = $siteId !== null
+			? getSetting('csp_manager', 'mode', 'report-only', $siteId)
+			: getSetting('csp_manager', 'mode', 'report-only');
+
+		return $mode === 'enforce';
+	}
+
+	/**
+	 * Whether the theme's inline checkout scripts and onclick handlers are
+	 * actually blocked: CSP Manager is enforcing (its checkout policy blocks
+	 * them whether or not this plugin sends one), or this plugin sends its
+	 * policy without CSP Manager. Only then is the theme compatibility script
+	 * loaded; otherwise the inline code runs itself and the script would run
+	 * each toggle a second time.
+	 */
+	public static function checkoutInlineBlocked(?int $siteId = null): bool {
+		if (self::cspManagerActive($siteId)) {
+			return self::cspManagerEnforcing($siteId);
+		}
+
+		return self::sendCheckoutCsp($siteId);
+	}
+
+	/**
 	 * All configured instances, in saved order, still encrypted at rest.
 	 *
 	 * @return array<int, array<string, mixed>>

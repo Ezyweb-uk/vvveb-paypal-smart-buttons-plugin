@@ -27,7 +27,7 @@ Category: payment
 Url: https://github.com/Ezyweb-uk/vvveb-paypal-smart-buttons-plugin
 Description: SAQ A PCI compliant PayPal integration using the JavaScript SDK and REST API v2. Orders are created and verified server-side.
 Author: Ezyweb.uk
-Version: 0.3
+Version: 0.4
 Thumb: paypal-smart-buttons.svg
 Author url: https://ezyweb.uk
 Settings: /admin/index.php?module=plugins/paypal-smart-buttons/settings
@@ -103,7 +103,7 @@ class PaypalSmartButtons {
 		});
 		
 		Event::on('Vvveb\Controller\Base', 'init', __CLASS__, function ($site) use ($routes) {
-			if (! headers_sent() && ($url = Routes::getUrlData()) && in_array($url['module'], $routes)) {
+			if (! headers_sent() && ($url = Routes::getUrlData()) && in_array($url['module'], $routes) && SettingsResolver::sendCheckoutCsp()) {
 				$nonce = Csp::nonce();
 
 				//Which configured instance will actually apply to this

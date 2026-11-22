@@ -22,6 +22,7 @@ amount), and the payment is verified and captured on the server before the Vvveb
 ## Requirements
 
 - Vvveb 1.0.9.0 or later, PHP 8 with cURL.
+- Front end: tested with the Landing theme (Oct 2026). Optional: Ezyweb's CSP Manager plugin.
 - A PayPal Business account and a REST app (Client ID and Secret) from the
   [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/applications).
 
@@ -38,19 +39,36 @@ Manual install: copy the files to `plugins/paypal-smart-buttons/` and the `publi
 
 ## Content Security Policy
 
-On the checkout page the plugin sends its own Content Security Policy header: scripts only from your site,
-PayPal's hosts, and the one small inline config script, which carries a per-request nonce. The checkout
-script is loaded with a Subresource Integrity hash.
+The checkout page can carry a Content Security Policy that only allows your site's scripts and PayPal's,
+which protects the payment page from injected scripts. The plugin's own policy allows PayPal's hosts and
+its one inline config script (by a per-request nonce), and its checkout script has a Subresource
+Integrity hash.
 
-This strict policy also blocks any inline `<script>` and inline `onclick` handlers in the theme's checkout
-page. See the version history and the issues list for the status of Landing theme compatibility.
+**Settings › All profiles › Checkout security policy:**
+
+| Setting | What happens |
+|---|---|
+| **Automatic** (default) | Sent only when Ezyweb's [CSP Manager](https://ezyweb.uk) plugin (`csp-manager`) is active. CSP Manager merges it into its own policy and applies its report-only or enforce mode. Without CSP Manager, no policy is sent and the theme's checkout works as usual. |
+| **Always send** | Sent on every checkout, with or without CSP Manager. |
+| **Never send** | Not sent. If CSP Manager is enforcing, its checkout policy then lacks PayPal's hosts and blocks the buttons (the settings page warns about this). |
+
+A strict policy also blocks the theme's inline checkout code. Whenever that code is actually blocked (this
+plugin's policy without CSP Manager, or CSP Manager in enforce mode), the plugin loads
+`checkout-compat.js`, which does the same work from an allowed file for the Landing theme: the region
+list when the country changes, "ship to a different address", and the login, register and password
+toggles. It only acts on inline handlers that are still in the page, so themes that already moved them
+out are unaffected. CSP Manager's "strip inline handlers" option removes those handlers from the page, so
+with stock Landing turn that option off (or use a theme with its own listeners).
 
 The plugin adds three routes: `/paypal-smart-create`, `/paypal-smart-capture` and `/paypal-smart-resolve`.
 
 ## Version history
 
+- **0.4** (2026-11-22): checkout security policy setting (Automatic / Always / Never), detecting
+  CSP Manager and its mode; `checkout-compat.js` keeps the Landing theme's checkout working (region list,
+  shipping address and login/register toggles) when its inline code is blocked. Copyright notice and
+  LICENSE added.
 - **0.3** (Nov 2026): settings page updated for the Vvveb 1.0.9.0 admin (SVG icons, new header layout).
-  Copyright notice and LICENSE added.
 - Earlier versions: multi-profile PayPal Smart Buttons checkout with server-side order creation and capture.
 
 ## Licence

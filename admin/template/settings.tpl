@@ -91,3 +91,8 @@ foreach ($this->success_payment_status as $status_index => $status_name) { ?>
 @success_payment_status|after = <?php
 }
 ?>
+
+#field-checkout-csp option[value="auto"]|addNewAttribute = <?php if (($this->checkout_csp ?? 'auto') === 'auto') echo 'selected'; ?>
+#field-checkout-csp option[value="always"]|addNewAttribute = <?php if (($this->checkout_csp ?? 'auto') === 'always') echo 'selected'; ?>
+#field-checkout-csp option[value="never"]|addNewAttribute = <?php if (($this->checkout_csp ?? 'auto') === 'never') echo 'selected'; ?>
+#checkout-csp-status|innerText = <?php echo htmlspecialchars((string) ($this->checkout_csp_status ?? '')); ?>

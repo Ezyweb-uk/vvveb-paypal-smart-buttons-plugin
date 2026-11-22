@@ -28,7 +28,9 @@ use Vvveb\Controller\Base;
 use function Vvveb\deleteSetting;
 use function Vvveb\getSetting;
 use function Vvveb\setMultiSetting;
+use function Vvveb\setSetting;
 use Vvveb\Plugins\PaypalSmartButtons\System\Crypto;
+use Vvveb\Plugins\PaypalSmartButtons\System\SettingsResolver;
 use Vvveb\Sql\Payment_StatusSQL;
 use Vvveb\Sql\Region_GroupSQL;
 use Vvveb\System\CacheManager;
@@ -196,6 +198,9 @@ class Settings extends Base {
 				$methods = array_values($methods);
 				setMultiSetting($this->namespace, $methods, $this->global['site_id']);
 
+				$checkoutCsp = (string) ($this->request->post['options']['checkout_csp'] ?? 'auto');
+				setSetting(SettingsResolver::OPTIONS_KEY, 'checkout_csp', in_array($checkoutCsp, ['auto', 'always', 'never'], true) ? $checkoutCsp : 'auto', $this->global['site_id']);
+
 				CacheManager::delete();
 				$this->view->success[] = __('Settings saved!');
 			}
@@ -260,6 +265,29 @@ class Settings extends Base {
 			]];
 		}
 
-		$this->view->methods = $methods;
+		$this->view->methods      = $methods;
+		$siteId = $this->global['site_id'];
+
+		$this->view->checkout_csp = SettingsResolver::checkoutCspMode($siteId);
+
+		if (! SettingsResolver::cspManagerActive($siteId)) {
+			$cspManager = __('CSP Manager is not active.');
+		} else {
+			$cspManager = SettingsResolver::cspManagerEnforcing($siteId)
+				? __('CSP Manager is active (enforce mode).')
+				: __('CSP Manager is active (report-only mode: nothing is blocked, violations are only reported).');
+		}
+
+		if (! SettingsResolver::sendCheckoutCsp($siteId)) {
+			$status = SettingsResolver::cspManagerEnforcing($siteId)
+				? __('Now: not sent. Warning: CSP Manager is enforcing its checkout policy without PayPal\'s hosts, so the PayPal buttons will be blocked. Choose Automatic.')
+				: __('Now: not sent.');
+		} else {
+			$status = SettingsResolver::checkoutInlineBlocked($siteId)
+				? __('Now: sent and enforced, with the theme compatibility script.')
+				: __('Now: sent, merged by CSP Manager.');
+		}
+
+		$this->view->checkout_csp_status = $cspManager . ' ' . $status;
 	}
 }
