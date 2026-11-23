@@ -29,8 +29,9 @@
  *     password-eye toggles;
  *   - <script>AOS.init({ once: true });</script> (scroll animations).
  *
- * This file is loaded only when that CSP is sent and enforced (by this plugin,
- * or by CSP Manager in enforce mode), and does the same
+ * This file is loaded only when that CSP is sent and enforced by this plugin
+ * without CSP Manager, or by a CSP Manager older than 0.5 in enforce mode
+ * (CSP Manager 0.5+ adds its own copy), and does the same
  * work from an allowed external file. Each part only acts when the inline
  * version didn't: regionsUrl only if it isn't defined, handlers only for
  * elements that still carry an onclick attribute (themes or CSP Manager that
@@ -39,6 +40,14 @@
  */
 (function () {
 	'use strict';
+
+	// Runs once per page: CSP Manager (0.5+) ships the same script, and only
+	// one copy may act, or every toggle would run twice (open, then closed).
+	if (window.vvvebInlineCompat) {
+		return;
+	}
+
+	window.vvvebInlineCompat = true;
 
 	var script = document.currentScript;
 

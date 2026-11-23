@@ -27,7 +27,7 @@ Category: payment
 Url: https://github.com/Ezyweb-uk/vvveb-paypal-smart-buttons-plugin
 Description: SAQ A PCI compliant PayPal integration using the JavaScript SDK and REST API v2. Orders are created and verified server-side.
 Author: Ezyweb.uk
-Version: 0.4
+Version: 0.5
 Thumb: paypal-smart-buttons.svg
 Author url: https://ezyweb.uk
 Settings: /admin/index.php?module=plugins/paypal-smart-buttons/settings

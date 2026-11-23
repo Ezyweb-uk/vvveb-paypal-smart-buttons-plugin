@@ -52,18 +52,28 @@ Integrity hash.
 | **Always send** | Sent on every checkout, with or without CSP Manager. |
 | **Never send** | Not sent. If CSP Manager is enforcing, its checkout policy then lacks PayPal's hosts and blocks the buttons (the settings page warns about this). |
 
-A strict policy also blocks the theme's inline checkout code. Whenever that code is actually blocked (this
-plugin's policy without CSP Manager, or CSP Manager in enforce mode), the plugin loads
-`checkout-compat.js`, which does the same work from an allowed file for the Landing theme: the region
-list when the country changes, "ship to a different address", and the login, register and password
-toggles. It only acts on inline handlers that are still in the page, so themes that already moved them
-out are unaffected. CSP Manager's "strip inline handlers" option removes those handlers from the page, so
-with stock Landing turn that option off (or use a theme with its own listeners).
+A strict policy also blocks the theme's inline checkout code: on the stock Landing theme the Region list (and
+with it the shipping recalculation when the country changes), "ship to a different address", and the login,
+register and password toggles. A small compatibility script, `checkout-compat.js`, does the same work from an
+allowed file. Exactly one copy is added when that code is really blocked:
+
+- **CSP Manager 0.5 or later active:** CSP Manager adds its copy (it reads the final enforced policy, so only in
+  enforce mode), and this plugin doesn't.
+- **No CSP Manager, policy set to Always send:** this plugin adds its copy.
+- **CSP Manager older than 0.5 in enforce mode:** this plugin adds its copy, as in 0.4.
+
+The script only acts on inline handlers that are still in the page, so themes that already moved them out are
+unaffected, and it runs once per page even if two copies load. CSP Manager's "strip inline handlers" option
+removes those handlers from the page, so with stock Landing leave that option off.
 
 The plugin adds three routes: `/paypal-smart-create`, `/paypal-smart-capture` and `/paypal-smart-resolve`.
 
 ## Version history
 
+- **0.5** (2026-11-23): the theme compatibility script is now added by CSP Manager 0.5+ (which also covers
+  sites without this plugin, e.g. for shipping plugins that depend on the Region list); this plugin only adds
+  its own copy when it enforces its policy without CSP Manager, or with a CSP Manager older than 0.5. The
+  script runs once per page even if two copies load.
 - **0.4** (2026-11-22): checkout security policy setting (Automatic / Always / Never), detecting
   CSP Manager and its mode; `checkout-compat.js` keeps the Landing theme's checkout working (region list,
   shipping address and login/register toggles) when its inline code is blocked. Copyright notice and

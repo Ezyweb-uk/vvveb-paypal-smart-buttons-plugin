@@ -123,16 +123,26 @@ class SettingsResolver {
 	}
 
 	/**
-	 * Whether the theme's inline checkout scripts and onclick handlers are
-	 * actually blocked: CSP Manager is enforcing (its checkout policy blocks
-	 * them whether or not this plugin sends one), or this plugin sends its
-	 * policy without CSP Manager. Only then is the theme compatibility script
-	 * loaded; otherwise the inline code runs itself and the script would run
-	 * each toggle a second time.
+	 * Whether CSP Manager adds the theme compatibility script itself
+	 * (CSP Manager 0.5+, public/inline-compat.js): it then decides from the
+	 * final policy header and this plugin leaves the script to it.
+	 */
+	public static function cspManagerHasCompat(): bool {
+		return is_file(DIR_PLUGINS . self::CSP_MANAGER_SLUG . '/public/inline-compat.js');
+	}
+
+	/**
+	 * Whether this plugin loads its own theme compatibility script: the
+	 * theme's inline checkout scripts and onclick handlers are blocked and
+	 * nothing else will add the script. That is this plugin sending its
+	 * policy without CSP Manager ("Always send"), or an older CSP Manager
+	 * (before 0.5, without its own copy) in enforce mode. With CSP Manager
+	 * 0.5+ active, CSP Manager adds it, so this plugin doesn't: two copies
+	 * would run every toggle twice (the script also guards against that).
 	 */
 	public static function checkoutInlineBlocked(?int $siteId = null): bool {
 		if (self::cspManagerActive($siteId)) {
-			return self::cspManagerEnforcing($siteId);
+			return ! self::cspManagerHasCompat() && self::cspManagerEnforcing($siteId);
 		}
 
 		return self::sendCheckoutCsp($siteId);

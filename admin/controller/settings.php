@@ -285,7 +285,9 @@ class Settings extends Base {
 		} else {
 			$status = SettingsResolver::checkoutInlineBlocked($siteId)
 				? __('Now: sent and enforced, with the theme compatibility script.')
-				: __('Now: sent, merged by CSP Manager.');
+				: (SettingsResolver::cspManagerActive($siteId) && SettingsResolver::cspManagerHasCompat()
+					? __('Now: sent, merged by CSP Manager (which adds the theme compatibility script when it enforces).')
+					: __('Now: sent, merged by CSP Manager.'));
 		}
 
 		$this->view->checkout_csp_status = $cspManager . ' ' . $status;

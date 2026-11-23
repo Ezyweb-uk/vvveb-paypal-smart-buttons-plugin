@@ -325,7 +325,7 @@
                       <option value="always">Always send</option>
                       <option value="never">Never send</option>
                     </select>
-                    <div class="form-text">A Content Security Policy header on the checkout page that only allows your site's scripts and PayPal's, to protect the payment page from injected scripts. A strict policy also blocks inline scripts in the theme's checkout page, so whenever they are blocked (by this policy or by CSP Manager in enforce mode) the plugin loads a small script that does their work for the Landing theme (region list, "ship to a different address", login and register toggles). Automatic sends it only on sites using CSP Manager, which then merges it into its own policy and applies its report-only or enforce mode.</div>
+                    <div class="form-text">A Content Security Policy header on the checkout page that only allows your site's scripts and PayPal's, to protect the payment page from injected scripts. A strict policy also blocks inline scripts in the theme's checkout page, so a small script does their work for the Landing theme (region list, "ship to a different address", login and register toggles): CSP Manager 0.5+ adds it when it enforces, and this plugin adds it when it enforces its own policy without CSP Manager. Automatic sends it only on sites using CSP Manager, which then merges it into its own policy and applies its report-only or enforce mode.</div>
                     <div class="form-text fw-semibold" id="checkout-csp-status"></div>
                   </div>
                 </div>
