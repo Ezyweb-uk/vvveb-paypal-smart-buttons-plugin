@@ -1,0 +1,63 @@
+# Builds the installable plugin zip when a release is published and attaches
+# it to the release.
+#
+# Vvveb only installs a plugin zip whose single top folder is named exactly
+# the plugin's slug (the "Slug:" line in plugin.php), e.g. csp-manager/.
+# GitHub's automatic "Source code (zip)" uses <repo>-<tag>/ instead, which
+# Vvveb rejects ("plugin slug ... does not match folder ..."), so this
+# workflow builds <slug>.zip with the right folder name.
+#
+# Files marked export-ignore in .gitattributes (the .github folder) are left out.
+
+name: Release zip
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to build and attach the zip to (e.g. v0.4)
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - name: Check out the release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Read the plugin slug and version
+        id: info
+        run: |
+          slug=$(sed -n 's/^Slug:[[:space:]]*//p' plugin.php | tr -d '\r[:space:]')
+          version=$(sed -n 's/^Version:[[:space:]]*//p' plugin.php | tr -d '\r[:space:]')
+
+          if [ -z "$slug" ]; then
+            echo "::error file=plugin.php::No 'Slug:' line found in plugin.php"
+            exit 1
+          fi
+
+          if [ "${TAG#v}" != "$version" ]; then
+            echo "::warning file=plugin.php::Release tag $TAG does not match plugin.php Version: $version"
+          fi
+
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+          echo "Building $slug.zip (version $version) for $TAG"
+
+      - name: Build the zip
+        run: |
+          git archive --format=zip --prefix="${{ steps.info.outputs.slug }}/" -o "${{ steps.info.outputs.slug }}.zip" HEAD
+          unzip -l "${{ steps.info.outputs.slug }}.zip"
+
+      - name: Attach the zip to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" "${{ steps.info.outputs.slug }}.zip" --clobber --repo "$GITHUB_REPOSITORY"
