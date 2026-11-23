@@ -55,12 +55,11 @@ Integrity hash.
 A strict policy also blocks the theme's inline checkout code: on the stock Landing theme the Region list (and
 with it the shipping recalculation when the country changes), "ship to a different address", and the login,
 register and password toggles. A small compatibility script, `checkout-compat.js`, does the same work from an
-allowed file. Exactly one copy is added when that code is really blocked:
+allowed file. It is added only when that code is really blocked:
 
-- **CSP Manager 0.5 or later active:** CSP Manager adds its copy (it reads the final enforced policy, so only in
-  enforce mode), and this plugin doesn't.
-- **No CSP Manager, policy set to Always send:** this plugin adds its copy.
-- **CSP Manager older than 0.5 in enforce mode:** this plugin adds its copy, as in 0.4.
+- **CSP Manager active:** CSP Manager adds it (it reads the final enforced policy, so only in enforce mode), and
+  this plugin doesn't.
+- **No CSP Manager, policy set to Always send:** this plugin adds it.
 
 The script only acts on inline handlers that are still in the page, so themes that already moved them out are
 unaffected, and it runs once per page even if two copies load. CSP Manager's "strip inline handlers" option
@@ -70,16 +69,9 @@ The plugin adds three routes: `/paypal-smart-create`, `/paypal-smart-capture` an
 
 ## Version history
 
-- **0.5** (2026-11-23): the theme compatibility script is now added by CSP Manager 0.5+ (which also covers
-  sites without this plugin, e.g. for shipping plugins that depend on the Region list); this plugin only adds
-  its own copy when it enforces its policy without CSP Manager, or with a CSP Manager older than 0.5. The
-  script runs once per page even if two copies load.
-- **0.4** (2026-11-22): checkout security policy setting (Automatic / Always / Never), detecting
-  CSP Manager and its mode; `checkout-compat.js` keeps the Landing theme's checkout working (region list,
-  shipping address and login/register toggles) when its inline code is blocked. Copyright notice and
-  LICENSE added.
-- **0.3** (Nov 2026): settings page updated for the Vvveb 1.0.9.0 admin (SVG icons, new header layout).
-- Earlier versions: multi-profile PayPal Smart Buttons checkout with server-side order creation and capture.
+- **0.5** (2026-11-23): current release, tested with Vvveb 1.0.9.0 and the Oct 2026 Landing theme. Earlier
+  versions were development releases.
+
 
 ## Licence
 
