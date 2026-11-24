@@ -19,6 +19,13 @@ amount), and the payment is verified and captured on the server before the Vvveb
 - Debug mode per profile: extra detail in the browser console and checkout error messages
   (full errors always go to the PHP error log).
 
+## Settings
+
+**Plugins › PayPal Smart Buttons › Settings**, with one sandbox profile (example values). Each profile has its
+own tab; the checkout security policy setting at the bottom applies to all profiles.
+
+![PayPal Smart Buttons settings: profile tab with environment, client ID and secret, currency, region and debug mode, and the checkout security policy setting](docs/screenshots/settings.png)
+
 ## Requirements
 
 - Vvveb 1.0.9.0 or later, PHP 8 with cURL.
